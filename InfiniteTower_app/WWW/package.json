@@ -1,0 +1,13 @@
+{
+  "name": "infinite-tower",
+  "version": "0.1.0",
+  "description": "Infinite Tower - a browser-based endless vertical platformer with theme and pixel editor support.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "http-server . -c-1 -p 5173"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

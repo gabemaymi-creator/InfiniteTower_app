@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+
+node_modules/
+.npm/
+
+dist/
+build/
+coverage/
+
+*.log
+*.tmp
+
+.env
+.env.*

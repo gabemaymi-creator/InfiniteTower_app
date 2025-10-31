@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Infinite Tower</title>
+  <link rel="preload" href="./docs/fonts/revamped-font/Revamped-X3q1a.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-dark">
+  <div id="layout">
+    <aside id="leftbar">
+      <div id="playerHeader">
+        <div id="playerCard">
+          <div id="playerNameBlock">
+            <label for="playerName" class="field-label">Name</label>
+            <input id="playerName" type="text" placeholder="Your name" maxlength="16" />
+          </div>
+          <div id="colorSection" role="listbox" aria-label="Character selection">
+            <div id="colorPicker"></div>
+            <div id="designPicker"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div id="gameContainer">
+      <div id="gameWrapper">
+        <img class="game-logo" src="./assets/tower-icon.PNG" alt="" aria-hidden="true" />
+        <button id="settingsBtn" type="button" aria-label="Open settings" aria-expanded="false">
+          <img src="./assets/settings-icon.png" alt="" aria-hidden="true" />
+        </button>
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        <div id="overlay" style="display:flex;">
+          <img src="./assets/tower-icon.PNG" alt="Infinite Tower emblem" class="start-logo" />
+          <h1>Infinite Tower</h1>
+          <button onclick="startGame()">Start</button>
+        </div>
+      </div>
+      <div id="touchControls" role="group" aria-label="Touch movement controls">
+        <button type="button" class="touch-btn" data-dir="left" aria-label="Move left">◀</button>
+        <button type="button" class="touch-btn" data-dir="right" aria-label="Move right">▶</button>
+      </div>
+    </div>
+    <aside id="sidebar">
+      <h2>High Scores</h2>
+      <table id="highScoresTable">
+        <thead>
+          <tr><th>Name</th><th>Score</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </aside>
+  </div>
+
+  <div id="settingsPanel" hidden aria-hidden="true">
+    <header class="settings-header">
+      <h2>Settings</h2>
+    </header>
+    <section class="settings-section">
+      <h3 class="settings-heading">Theme</h3>
+      <div id="themeOptions" role="radiogroup" aria-label="Color theme">
+        <button type="button" class="theme-option" data-theme="dark" aria-pressed="false">Dark</button>
+        <button type="button" class="theme-option" data-theme="light" aria-pressed="false">Light</button>
+        <button type="button" class="theme-option" data-theme="neon" aria-pressed="false">Neon</button>
+      </div>
+    </section>
+    <section class="settings-section">
+      <div id="audioControls">
+        <label for="musicVolume">Music Volume</label>
+        <div class="row">
+          <input id="musicVolume" type="range" min="0" max="100" step="1" value="50" />
+          <button id="muteBtn" type="button">Mute</button>
+        </div>
+        <label for="sfxVolume">SFX Volume</label>
+        <div class="row">
+          <input id="sfxVolume" type="range" min="0" max="100" step="1" value="100" />
+          <button id="sfxMuteBtn" type="button">Mute</button>
+        </div>
+        <audio id="bgmAudio" preload="auto" loop autoplay playsinline>
+          <source src="./assets/TowerTheme.wav" type="audio/wav" />
+        </audio>
+        <audio id="clickAudio" preload="auto">
+          <source src="Assets/Audio/SFX/Tower_Jumper-click_SFX.wav" type="audio/wav" />
+        </audio>
+        <audio id="landAudio" preload="auto">
+          <source src="Assets/Audio/SFX/Tower_Jumper-landing_SFX.wav" type="audio/wav" />
+        </audio>
+        <div id="audioMsg" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="settings-section" id="settingsInstructions">
+      <h2>How to Play</h2>
+      <ul>
+        <li>Move: Arrow keys or A/D</li>
+        <li>Jump: Space or Click/Tap</li>
+        <li>Pause: Escape</li>
+      </ul>
+    </section>
+  </div>
+
+  <div id="pixelModal">
+    <div class="dialog">
+      <header>
+        <h3>Edit Pixel Art (20×20)</h3>
+        <button id="pixelClose" class="close">Close</button>
+      </header>
+      <div id="pixelLayout">
+        <div id="editorArea">
+          <div id="editorWrap">
+            <div id="checker"></div>
+            <canvas id="pixelEditor" width="520" height="520"></canvas>
+          </div>
+          <div id="statusBar">
+            <span id="coord">000,000</span>
+          </div>
+        </div>
+        <aside id="sidePanel">
+          <canvas id="pixelPreview" width="200" height="200"></canvas>
+          <div id="editorPalette" aria-label="Brush colors"></div>
+          <div id="brushControls">
+            <input id="brushSize" type="range" min="1" max="5" step="1" />
+            <span id="brushSizeVal"></span>
+            <label for="brushShape">Shape</label>
+            <select id="brushShape">
+              <option value="square">Square</option>
+              <option value="circle">Circle</option>
+            </select>
+          </div>
+          <div id="editorInfo"></div>
+          <div id="editorControls">
+            <label for="pixelArtSlot">Slot</label>
+            <select id="pixelArtSlot">
+              <option value="0">1</option>
+              <option value="1">2</option>
+              <option value="2">3</option>
+              <option value="3">4</option>
+              <option value="4">5</option>
+            </select>
+            <button id="pixelExport" class="mini">Export</button>
+            <button id="pixelImport" class="mini">Import</button>
+            <input id="pixelFile" type="file" accept="application/json,.json" style="display:none" />
+            <button id="pixelSave">Save</button>
+            <button id="pixelClear">Clear</button>
+            <button id="pixelReset">Reset</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
